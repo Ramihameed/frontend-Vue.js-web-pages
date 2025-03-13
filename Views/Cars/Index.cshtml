@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue.js Dynamic Form</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+
+</head>
+<body>
+    <div id="app" class="container">
+        <h2 style="margin-left: 10px;">Car Form</h2>
+
+        <!-- Form with dynamic rows inside a table -->
+        <form v-on:submit.prevent="submitForm">
+
+
+            <table style="margin-left: 11px;" class="table table-bordered">
+                <thead class="alert-info">
+                    <tr>
+                        <th>ID</th>
+                        <th>Car Name</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(itemCar, index) in cars" :key="index">
+                        <td>{{ itemCar.id }}</td>
+
+                        <td>{{ itemCar.name }}</td>
+
+                        <td>{{ itemCar.price }}</td>
+                        <td>
+                            <button type="button" v-on:click="removeCar(index)" class="btn btn-primary">Remove</button>
+                            <button type="button" v-on:click="editCar(index)" class="btn btn-primary">Edit Car</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+
+
+        <div class="container">
+            <!-- Display the form data after submission -->
+            <pre v-if="formData">{{ formData }}</pre>
+            <div class="container-align-content-md-end">
+                <!-- Button to calculate the total price -->
+                <button style="margin-top: 20px; margin-right: 20px;" type="button" v-on:click="calculateTotal" class="btn btn-dark">Get Total Price</button>
+            </div>
+            <!-- Display the total price -->
+            <pre style="margin-top: 20px;">Total Price: {{ totalPrice }}</pre>
+
+            <!-- Button to launch the modal -->
+            <button type="button" class="btn btn-primary" v-on:click="OpenModalCreate()">
+                Add A car
+            </button>
+        </div>
+
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add Car</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" v-model="newCar.name" placeholder="Enter car name">
+                        <input type="number" v-model="newCar.price" placeholder="Enter car price">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" v-if="newCar.id !== null" class="btn btn-primary" v-on:click="saveCar()">
+                            save changes
+                        </button>
+                        <button type="button" v-if="newCar.id == null" class="btn btn-primary" v-on:click="addCar()">
+                            Add Car
+                        </button>
+
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+          new Vue({
+            el: '#app',
+            data: {
+                cars: [
+            { id: 1, name: 'toyota', price: 20000 },
+            { id: 2, name: 'Benz', price: 25000 },
+            { id: 3, name: 'Mercedes', price: 22000 },
+            { id: 4, name: 'Jaguar', price: 28000 },
+            { id: 5, name: 'Dongfeng', price: 30000 },
+          ],
+              formData: null,
+              totalPrice: null,
+              newCar: { id: 0, name: null, price: null },
+            },
+            methods: {
+                      addCar() {
+            if (this.newCar.name && this.newCar.price) {
+              const maxId = this.cars.reduce((max, car) => Math.max(max, car.id), 0);
+              // Find the highest id
+              this.newCar.id = maxId + 1;
+              this.cars.push({
+                id: this.newCar.id,
+                name: this.newCar.name,
+                price: this.newCar.price
+              });
+              this.calculateTotal();
+              this.hideModal();
+            } else {
+              alert('Please fill in all fields');
+            }
+          },
+              OpenModalCreate(){
+                this.newCar = { id:null,name: '', price: null }
+                this.openModal();
+              },
+            editCar(index) {
+            const carToEdit = this.cars[index];
+            this.newCar.name = carToEdit.name;
+            this.newCar.price = carToEdit.price;
+
+            // Open the modal
+            this.openModal();
+          },
+
+          saveCar() {
+            // Find the car index to update
+            const index = this.cars.findIndex(car => car.id === this.newCar.id);
+
+            if (index !== -1) {
+              Swal.fire({
+            title: "Do you want to save the changes?",
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Save",
+            denyButtonText: `Don't save`
+          }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+             this.cars[index].name = this.newCar.name;
+             this.cars[index].price = this.newCar.price;
+              Swal.fire("Saved!", "", "success");
+            } else if (result.isDenied) {
+              Swal.fire("Changes are not saved", "", "info");
+            }
+          });
+
+            }
+
+            // Close the modal after saving
+            this.hideModal();
+          },
+
+
+              openModal() {
+                $('#exampleModal').modal('show');
+              },
+              hideModal() {
+                $('#exampleModal').modal('hide');
+              },
+              removeCar(index) {
+                this.cars.splice(index, 1);
+                this.calculateTotal();
+              },
+              submitForm() {
+                this.formData = JSON.stringify(this.cars, null, 2);
+                alert('Form submitted successfully!');
+              },
+              calculateTotal() {
+                this.totalPrice = this.cars.reduce((sum, car) => sum + (+car.price || 0), 0);
+                return this.totalPrice;
+              },
+
+            }
+        });
+    </script>
+</body>
+</html>
