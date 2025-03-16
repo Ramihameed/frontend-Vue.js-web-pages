@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 
 
@@ -64,6 +64,11 @@
             <button type="button" class="btn btn-primary" v-on:click="OpenModalCreate()">
                 Add A car
             </button>
+            <button type="button" class="btn btn-primary" v-on:click="getCar()">
+                get all car
+            </button>
+            Post All Cars
+            <button type="button" class="btn btn-danger" v-on:click="postCars()"></button>
         </div>
 
 
@@ -79,18 +84,18 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <input type="text" v-model="newCar.name" placeholder="Enter car name">
-                        <input type="number" v-model="newCar.price" placeholder="Enter car price">
-                        <div>
-                            <label for="type">Choose a type:</label>
-                            <select v-model="newCar.type">
-                                <option v-for="(typeItem, index) in types" :key="index" :value="typeItem">
-                                    {{ typeItem }}
-                                </option>
-                            </select>
+                        <label for="name">Choose your Car Name:</label>
+                        <select v-model="newCar.name" v-on:change = "setCarType()">
+                            <option v-for="(nameitem,index) in carNames" :key="index" :value="nameitem.name">
+                                 {{ nameitem.name }}
+                            </option>
 
-                            <p>Selected Name: {{ newCar.type }}</p>
-                        </div>
+                        </select>
+                        <p>Selected Name: {{ newCar.name }}</p>
+                        <input type="number" v-model="newCar.price" placeholder="Enter car price">
+                        
+                        
+                        
 
                     </div>
                     <div class="modal-footer">
@@ -101,6 +106,7 @@
                         <button type="button" v-if="newCar.id == null" class="btn btn-primary" v-on:click="addCar()">
                             Add Car
                         </button>
+                        
 
 
 
@@ -116,10 +122,16 @@
           new Vue({
             el: '#app',
             data: {
-                  
-          selectedName: '',
-          types: ['Car1', 'Car2', 'Car3', 'Car4', 'Car5']
-        ,
+                  carsss: [
+          { Id: 781000, name: "Toyota", price: 2020 },
+          { Id: 2, name: "Honda", price: 2021 }
+        ]
+            ,carNames: [
+          { name: 'Sedan', type: 'Family' },
+          { name: 'Sports Car', type: 'Luxury' },
+          { name: 'SUV', type: 'Off-road' },
+          { name: 'Truck', type: 'Utility' }
+        ],
                 cars: [
             
           ],
@@ -144,7 +156,15 @@
             } else {
               alert('Please fill in all fields');
             }
-          },
+            },setCarType() {
+
+          const selectedCar = this.carNames.find(car => car.name === this.newCar.name);
+          if (selectedCar) {
+            this.newCar.type = selectedCar.type;
+          } else {
+            this.newCar.type = ''; // Reset the type if no match found
+          }
+        },
               OpenModalCreate(){
                 this.newCar = { id:null,name: '', price: null }
                 this.openModal();
@@ -156,7 +176,20 @@
 
             // Open the modal
             this.openModal();
-          },
+                  },getCar() {
+            axios.get("Car/getallcar")
+                .then(response => {
+                    console.log(response);
+                })
+                .catch(error => {
+                    console.error("Error occurred:", error);
+                });
+        }, postCars() {
+                axios.post("car/postCars", this.carsss).then(response =>
+                {console.log(response)}).catch(error => {console.log(error.response.data);
+})
+        }
+        ,
 
           saveCar() {
             // Find the car index to update
