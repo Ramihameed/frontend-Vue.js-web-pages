@@ -1,0 +1,28 @@
+﻿@model wheels
+
+@{
+    var searchId = ViewData["searchId"] as int?;
+}
+
+<h1>Edit Wheel</h1>
+
+<form method="post">
+    <div class="form-group">
+        <label for="name">Wheel Name</label>
+        <!-- Directly access Model's name property -->
+        <input type="text" id="name" name="name" class="form-control" value="@Model.name" required />
+    </div>
+
+    <div class="form-group">
+        <label for="pressure">Pressure</label>
+        <!-- Directly access Model's pressure property -->
+        <input type="number" id="pressure" name="pressure" class="form-control" value="@Model.pressure" required />
+    </div>
+
+    <!-- Hidden input for the id -->
+    <input type="hidden" name="id" value="@Model.id" />
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+<a href="@Url.Action("Index")" class="btn btn-secondary mt-3">Back to List</a>

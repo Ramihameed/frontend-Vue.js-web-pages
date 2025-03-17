@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Test_3.Data;
 
@@ -10,9 +11,11 @@ using Test_3.Data;
 namespace Test_3.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250316100656_final")]
+    partial class final
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -110,45 +113,22 @@ namespace Test_3.Migrations
                     b.HasKey("id");
 
                     b.ToTable("wheels");
-
-                    b.HasData(
-                        new
-                        {
-                            id = 1,
-                            name = "Toyota",
-                            pressure = 2000f
-                        },
-                        new
-                        {
-                            id = 2,
-                            name = "Honda",
-                            pressure = 2200f
-                        },
-                        new
-                        {
-                            id = 3,
-                            name = "Ford",
-                            pressure = 1800f
-                        });
                 });
 
             modelBuilder.Entity("cars", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("Relational:JsonPropertyName", "id");
+                        .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasAnnotation("Relational:JsonPropertyName", "name");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("price")
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "price");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

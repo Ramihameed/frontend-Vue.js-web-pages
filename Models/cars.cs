@@ -1,14 +1,10 @@
-﻿namespace Test_3.Models
+﻿using System.Text.Json.Serialization;
+
+public class cars
 {
-    public class cars
-    {
-        // Define the primary key explicitly
-        public int Id { get; set; }
+    public long Id { get; set; }
 
-        public string name { get; set; }
+    public string name { get; set; }
 
-        public int price { get; set; }
-
-        public ICollection<wheels> Wheels { get; set; }
-    }
+    public int price { get; set; }
 }

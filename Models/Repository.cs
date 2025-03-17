@@ -7,7 +7,7 @@ namespace Test_3.Models
         {
             throw new NotImplementedException();
         }
-
+        
         public void Edit(T entity)
         {
             throw new NotImplementedException();

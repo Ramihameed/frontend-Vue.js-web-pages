@@ -1,23 +1,18 @@
-﻿@model wheels
+﻿@model List<wheels>
 
+@{
+    var searchId = ViewData["searchId"] as int?;
+}
 
 <h1>Edit Wheel</h1>
 
-<form method="post">
+<form method="get" action="@Url.Action("Edit", "Wheels")">
     <div class="form-group">
-        <label for="name">Wheel Name</label>
-        <input type="text" id="name" name="name" class="form-control" value="@Model.name" required />
+        <label for="searchId">Enter Wheel ID to Edit</label>
+        <input type="number" id="searchId" name="id" class="form-control" required />
     </div>
 
-    <div class="form-group">
-        <label for="pressure">Pressure</label>
-        <input type="number" id="pressure" name="pressure" class="form-control" value="@Model.pressure" required />
-    </div>
-
-    <!-- Hidden input for the id (not needed to be displayed) -->
-    <input type="hidden" name="id" value="@Model.id" />
-
-    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="submit" class="btn btn-secondary">Search</button>
 </form>
 
-<a href="@Url.Action("Index")" class="btn btn-secondary mt-3">Back to List</a>
+

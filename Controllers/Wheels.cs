@@ -1,28 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Test_3.Models;
 using System.Collections.Generic;
+using Test_3.Services.CarServices;
+using Test_3.Data;
 
 namespace Test_3.Controllers
 {
     public class WheelsController : Controller
     {
-        // GET: Wheels
-
-        private static List<wheels> _wheels = new List<wheels>
+        private readonly ICarService _wheels;
+        private readonly ApplicationDbContext _context;
+        public WheelsController(ICarService wheelss, ApplicationDbContext test)
         {
-            new wheels { id = 1, name = "Wheel A", pressure = 32 },
-            new wheels { id = 2, name = "Wheel B", pressure = 30 }
-        };
-
-
+            this._wheels = wheelss;
+            this._context= test;
+        }
         public IActionResult Index()
         {
             // Sample data (this would typically come from a database)
             var wheelsList = new List<wheels>
             {
-                new wheels { name = "Alloy Wheel", pressure = 32 , id = 0},
-                new wheels { name = "Steel Wheel", pressure = 30, id = 1 },
-                new wheels { name = "Chrome Wheel", pressure = 34 , id = 3}
+                new wheels { id = 0, name = "Alloy Wheel", pressure = 32 },
+                new wheels { id = 1, name = "Steel Wheel", pressure = 30 },
+                new wheels {  id = 3, name = "Chrome Wheel", pressure = 34 }
             };
 
             return View(wheelsList); // Pass the list of wheels to the view
@@ -31,40 +31,44 @@ namespace Test_3.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            // Find the wheel by id
-            var wheel = _wheels.FirstOrDefault(w => w.id == id);
-            if (wheel == null)
+            var wheeltoedit = _context.wheels.FirstOrDefault(w => w.id == id);
+            if (wheeltoedit == null)
             {
-                return NotFound(); // Return 404 if not found
+                return NotFound(); // Return 404 if wheel not found
             }
-            return View(wheel); // Pass the wheel model to the view
+
+            return View(wheeltoedit); // Pass the wheel object to the view
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, wheels updatedWheel)
         {
-            // Validate if the model state is valid
+            // Check if the model is valid
             if (ModelState.IsValid)
             {
-                // Find the wheel by id
-                var wheel = _wheels.FirstOrDefault(w => w.id == id);
-                if (wheel == null)
+                var wheelToEdit = _context.wheels.FirstOrDefault(w => w.id == id);
+                if (wheelToEdit == null)
                 {
-                    return NotFound(); // Return 404 if the wheel is not found
+                    return NotFound(); // Return 404 if wheel not found
                 }
 
-                // Update the wheel properties
-                wheel.name = updatedWheel.name;
-                wheel.pressure = updatedWheel.pressure;
+                // Update the wheel properties with the new values
+                wheelToEdit.name = updatedWheel.name;
+                wheelToEdit.pressure = updatedWheel.pressure;
 
-                // After updating, redirect to the Index page (or another appropriate page)
-                return RedirectToAction(nameof(Index));
+                // Save the changes to the database
+                _context.SaveChanges();
+
+                // Redirect to the Index or another page after successful update
+                return RedirectToAction("Index");
             }
 
-            // If model state is invalid, return the same view with the updated wheel
+            // If the model state is invalid, return the view with the updated wheel
             return View(updatedWheel);
         }
+
 
 
 
