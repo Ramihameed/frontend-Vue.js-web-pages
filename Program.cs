@@ -18,7 +18,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 });
-builder.Services.AddScoped(typeof(CarService<>));
+builder.Services.AddScoped<ICarService, CarService>();
 
 var app = builder.Build();
 

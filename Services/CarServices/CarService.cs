@@ -1,54 +1,80 @@
-﻿
+﻿using Microsoft.AspNetCore.Cors.Infrastructure;
+using Test_3.Controllers;
 using Test_3.Data;
+using Test_3.Models;
+using Test_3.ViewModel.Cars; // Assuming the car model is defined here
 
 namespace Test_3.Services.CarServices
 {
-    public class CarService<T>: ICarService<T> where T : class
+    public class CarService : ICarService
     {
-        private List<cars> _carsList = new List<cars>();
-
-
-        private readonly ApplicationDbContext _context;
-
+        private readonly ApplicationDbContext _dbContext;
         public CarService(ApplicationDbContext context)
         {
-            _context = context;
+            _dbContext = context;
         }
-        public void addCar(int carId, string name, int price)
+        public async Task Create(List<CarsVM> modelList)
         {
-            // Create a new car object and assign the values
-            cars newCar = new cars
+            if (modelList == null || !modelList.Any())
             {
-                Id = carId,
-                name = name,
-                price = price
-            };
+                throw new ArgumentException("The list of cars cannot be empty.");
+            }
 
-            // Add the car to the in-memory list
-            _carsList.Add(newCar);
+            try
+            {
+                // Convert CarsVM to cars entity
+                var carsToAdd = modelList.Select(item => new cars
+                {
+                    name = item.name,
+                    price = item.price
+                }).ToList();
+
+                // Add all the cars in one batch
+                _dbContext.cars.AddRange(carsToAdd);
+
+                // Save all changes at once
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (use proper logging here)
+                // _logger.LogError(ex, "Error while adding cars to the database.");
+                throw new InvalidOperationException("An error occurred while saving cars.", ex);
+            }
         }
 
-        // Other methods (getCarById, getAllCars, etc.) will go here
 
-
-        public cars getCarById(int carId)
+        public async Task deleteCar(int carId)
         {
             throw new NotImplementedException();
         }
 
-        public List<cars> getAllCars()
-        {
-            return _context.cars.ToList();
-        }
-
-        public void updateCar(int carId, cars updatedCar)
+        public async Task<List<cars>> getAllCars()
         {
             throw new NotImplementedException();
         }
 
-        public void deleteCar(int carId)
+        public async Task<cars> getCarById(int id)
+        {
+            
+            return await _dbContext.cars.FindAsync(id);
+
+        }
+
+        public Task updateCar(List<CarsVM> updatedCar)
         {
             throw new NotImplementedException();
         }
     }
-}
+
+
+     
+
+        // Adds a car to the database
+
+
+
+
+
+    }
+

@@ -1,22 +1,17 @@
-﻿namespace Test_3.Services.CarServices
+﻿using Test_3.ViewModel.Cars;
+
+namespace Test_3.Services.CarServices
 {
-    public interface ICarService<T> where T : class
+    public interface ICarService
     {
 
-        // Create: Add a new car
-        void addCar(int carId, string name, int price);
+         Task<cars> getCarById(int id);
 
-        // Read: Get a car by its ID
-        cars getCarById(int carId);
+         Task<List<cars>> getAllCars();
 
-            // Read: Get all cars
-            List<cars> getAllCars();
-
-            // Update: Update car details
-            void updateCar(int carId, cars updatedCar);
-
-            // Delete: Remove a car by its ID
-            void deleteCar(int carId);
-        }
-
+         Task Create(List<CarsVM> modelList);
+         Task updateCar(List<CarsVM> updatedCar);
+         Task deleteCar(int carId);
     }
+
+}

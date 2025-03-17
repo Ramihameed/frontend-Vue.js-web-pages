@@ -8,9 +8,9 @@ namespace Test_3.Controllers
 {
     public class WheelsController : Controller
     {
-        private readonly CarService<wheels> _wheels;
+        private readonly ICarService _wheels;
         private readonly ApplicationDbContext _context;
-        public WheelsController(CarService<wheels> wheelss, ApplicationDbContext test)
+        public WheelsController(ICarService wheelss, ApplicationDbContext test)
         {
             this._wheels = wheelss;
             this._context= test;
